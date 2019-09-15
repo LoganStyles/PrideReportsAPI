@@ -16,45 +16,7 @@ class Service extends REST_Controller {
         $this->methods['sale_post']['limit'] = 500; // 500 requests per hour per user/key
     }
 
-    // public function users_get() {
-    //     $type = $this->get('type');
-    //     $val = $this->get('val');
-
-    //     if (empty($val)) {
-    //         // Invalid room_number/reservation_id, set the response and exit.
-    //         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
-    //     } else {
-    //         $results = $this->resv_model->verifyRoom($type, $val);
-    //         // Set the response and exit
-    //         $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-    //     }
-    // }
     
-    // public function saleAccounts_get() {
-    //     $type = 'sale';
-
-    //     if (empty($type)) {
-    //         // Invalid selection, set the response and exit.
-    //         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
-    //     } else {
-    //         $results = $this->app_model->getSaleAccounts();
-    //         // Set the response and exit
-    //         $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-    //     }
-    // }
-
-    
-    // public function sale_post() {        
-    //     if (empty($this->post())) {
-    //         // Invalid set the response and exit.
-    //         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
-    //     } else {
-    //         $results = $this->resv_model->savePOSFolio($this->post());
-    //         // Set the response and exit
-    //         $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-    //     }
-    // }
-
     //reports
     public function arrivals_get() {
         // $type = $this->get('type');
