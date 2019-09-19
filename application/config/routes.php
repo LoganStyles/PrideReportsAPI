@@ -56,5 +56,6 @@ $route['404_override'] = 'app/page404';
 // $route['api/service/users/(:any)/(:any)'] = 'api/service/users/$1/$2'; 
 // $route['api/service/sale/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/service/sale/$1/$2/$3/$4/$5/$6';
 
+// $route['arrivals'] = 'report/getReports/arrivals';
 
 

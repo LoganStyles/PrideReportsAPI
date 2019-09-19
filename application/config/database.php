@@ -74,10 +74,14 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
-	'dsn'	=> 'mysql:host=localhost;dbname=pridehotel_online_reports',
-	'username' => 'pridehotel_online_reports',
-	'password' => 'pridehotel_online_reports',
-	'database' => 'pridehotel_online_reports',
+	// 'dsn'	=> 'mysql:host=localhost;dbname=pridehotel_online_reports',
+	// 'username' => 'pridehotel_online_reports',
+	// 'password' => 'pridehotel_online_reports',
+	// 'database' => 'pridehotel_online_reports',
+	'dsn'	=> 'mysql:host=localhost;dbname=webmobil_GALPINREPORTS',
+	'username' => 'webmobil_galpinu',
+	'password' => '6XjxYpN)kZbX',
+	'database' => 'webmobil_GALPINREPORTS',
 	'dbdriver' => 'pdo',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

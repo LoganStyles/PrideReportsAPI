@@ -19,21 +19,100 @@ class Service extends REST_Controller {
     
     //reports
     public function arrivals_get() {
-        // $type = $this->get('type');
-        // $val = $this->get('val');
+        $type = "arrivals";
+        $from = $this->get('from');//strings
+        $to = $this->get('to');
 
-        $from="2018-09-01";
-        $to="2019-09-12";
-        $type="arrivals";
+        // print_r($this->get());
+        // echo 'type '.$type;exit;
 
-        // if (empty($val)) {
-        //     // Invalid room_number/reservation_id, set the response and exit.
-        //     $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
-        // } else {
+        // $from="2018-09-01";
+        // $to="2019-09-12";
+        // $type="arrivals";
+
+        if (empty($type)) {
+            // Invalid room_number/reservation_id, set the response and exit.
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+        } else {
             $results = $this->resv_model->getReportsApi($type, $from,$to);
             // Set the response and exit
             $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-        // }
+        }
+    }
+
+    public function departures_get() {
+        $type = "departures";
+        $from = $this->get('from');//strings
+        $to = $this->get('to');
+
+        if (empty($type)) {
+            // Invalid room_number/reservation_id, set the response and exit.
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+        } else {
+            $results = $this->resv_model->getReportsApi($type, $from,$to);
+            // Set the response and exit
+            $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+        }
+    }
+
+    public function stayingguests_get() {
+        $type = "staying guests";
+        $from = $this->get('from');
+        $to = $this->get('to');
+
+        if (empty($type)) {
+            // Invalid room_number/reservation_id, set the response and exit.
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+        } else {
+            $results = $this->resv_model->getReportsApi($type, $from,$to);
+            // Set the response and exit
+            $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+        }
+    }
+
+    public function salessummary_get() {
+        $type = "sales summary";
+        $from = $this->get('from');
+        $to = $this->get('to');
+
+        if (empty($type)) {
+            // Invalid room_number/reservation_id, set the response and exit.
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+        } else {
+            $results = $this->resv_model->getReportsApi($type, $from,$to);
+            // Set the response and exit
+            $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+        }
+    }
+
+    public function salesfnbsummary_get() {
+        $type = "sales_fnb_summary";
+        $from = $this->get('from');
+        $to = $this->get('to');
+
+        if (empty($type)) {
+            // Invalid room_number/reservation_id, set the response and exit.
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+        } else {
+            $results = $this->resv_model->getReportsApi($type, $from,$to);
+            // Set the response and exit
+            $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+        }
+    }
+
+    public function cashiersummary_get() {
+        $type = "cashier summary";
+        $from = $this->get('from');
+        $to = $this->get('to');
+
+        if (empty($type)) {
+            // Invalid room_number/reservation_id, set the response and exit.
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+        } else {
+            $results = $this->resv_model->getReportsApi($type, $from,$to);
+            // Set the response and exit
+            $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+        }
     }
 
 
@@ -99,6 +178,30 @@ class Service extends REST_Controller {
             $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
         } else {
             $results = $this->LocalUpdater_model->update("reservationfolioitems","ID",$this->post());
+            //Set the response and exit
+            $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+        }
+    }
+
+    public function roomitemsinsert_post() {        
+        if (empty($this->post())) {
+            // Invalid set the response and exit.
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+        } else {
+            // 
+            $results = $this->LocalUpdater_model->insert("roomitems","title",$this->post());
+            //Set the response and exit
+            $this->response($results, REST_Controller::HTTP_OK);
+        }
+    }
+
+    public function roomitemsupdate_post() {        
+        if (empty($this->post())) {
+            // Invalid set the response and exit.
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+        } else {
+            
+            $results = $this->LocalUpdater_model->update("roomitems","title",$this->post());
             //Set the response and exit
             $this->response($results, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
         }

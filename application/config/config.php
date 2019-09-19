@@ -23,8 +23,8 @@ date_default_timezone_set('Africa/Lagos');
 | a PHP script and you can easily do that on your own.
 |
 */
-// $config['base_url'] = 'http://localhost/pridehotel';
-$config['base_url'] = 'http://localhost:81/pridehotel_lagos';
+$config['base_url'] = 'http://galpin.webmobiles.com.ng/';
+// $config['base_url'] = 'http://localhost:81/pridehotel_lagos';
 
 
 /*

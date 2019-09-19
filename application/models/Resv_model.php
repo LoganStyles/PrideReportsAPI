@@ -2517,12 +2517,14 @@ class Resv_model extends App_model {
 
         //convert report_from
         $temp_date = str_replace('/', '-', $report_from);
+        // $from=new DateTime($temp_date);
         $from_date=new DateTime($temp_date);
         $from_date->setTime(0,0,0);
         $from= $from_date->format('Y-m-d H:i:s');
 
         //convert report_to
         $temp_date = str_replace('/', '-', $report_to);
+        // $to=new DateTime($temp_date);
         $to_date=new DateTime($temp_date);
         $to_date->setTime(23,59,59);
         $to= $to_date->format('Y-m-d H:i:s');
@@ -2535,11 +2537,11 @@ class Resv_model extends App_model {
         switch ($type) {
             /*get only guests arriving in this duration:confirmed*/
             case "arrivals":
-                $where = "and ri.arrival between '$from' AND '$to' $and_user "
+                $where = "and cast(ri.arrival as date) between '$from' AND '$to' $and_user "
                         . "and ri.status='confirmed' ORDER BY ri.arrival ASC";
                 break;
             case "departures":
-                $where = "and ri.departure between '$from' AND '$to' $and_user "
+                $where = "and cast(ri.departure as date) between '$from' AND '$to' $and_user "
                         . " ORDER BY ri.departure ASC";
                 break;
             case "staying guests":
@@ -2638,6 +2640,8 @@ class Resv_model extends App_model {
                     . "on(ri.room_number=ro.ID) left join roomtypeitems as rt "
                     . "on(ri.roomtype =rt.ID) where 1=1 $where";
         }
+
+        // echo $q;exit;
 
         $query = $this->db->query($q);
         if ($query->num_rows() > 0) {
@@ -2792,6 +2796,7 @@ class Resv_model extends App_model {
                     . "on(ri.room_number=ro.ID) left join roomtypeitems as rt "
                     . "on(ri.roomtype =rt.ID) where 1=1 $where";
         }
+
 
         $query = $this->db->query($q);
         if ($query->num_rows() > 0) {

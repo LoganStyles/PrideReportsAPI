@@ -28,7 +28,7 @@ class LocalUpdater_model extends App_model {
             //lets confirm that row does not exist
             $current_reservation_id=$row[$unique_table_key];
 
-            $this->db->select('ID');
+            $this->db->select('*');
             $this->db->where($unique_table_key,$current_reservation_id);
             $query = $this->db->get($table);
 

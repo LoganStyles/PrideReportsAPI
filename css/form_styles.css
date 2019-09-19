@@ -1,0 +1,10 @@
+.help-block,.has-error{
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    color: #df0e0a;
+}
+
+/* .field-validation-valid{
+    border: #df0e0a 2px solid;
+} */
