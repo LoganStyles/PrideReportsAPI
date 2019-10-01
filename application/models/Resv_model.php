@@ -2506,14 +2506,150 @@ class Resv_model extends App_model {
         if ($query->num_rows() > 0)
             return $query->result_array();
     }
+    /*get fnb reports for api*/
+    public function getFnBSalesByMenuReportsApi($type,$report_from,$report_to,$locationCode, $resv_id=NULL){
+
+        $results['menu_item'] = array();
+        $results['discount'] = array();
+        $results['discount_cash'] = array();
+        $results['tax'] = array();
+
+        $print_date_from=$report_from;
+        $temp_date=$report_to;
+        $actual_print_date_to = date('Y-m-d', strtotime($temp_date . '+1 day')); //increase date by 1 since date_created is a datetime field
+
+        $q_menu_item = "SELECT f.title,sum(f.quantity) as quantity,sum(f.price) as sales_amount,sum(f.discount_amount) "
+            . "as discount_total,sum(f.price)/p.total_price * 100 as 'percentage' "
+            . "FROM pos_transaction_items f CROSS JOIN (SELECT sum(price) as total_price "
+            . "FROM pos_transaction_items WHERE date_created BETWEEN '$report_from' AND '$actual_print_date_to') p "
+            . "WHERE f.date_created BETWEEN '$report_from' AND '$actual_print_date_to'  "
+            . " group by f.title ";
+
+            $query = $this->db->query($q_menu_item);
+
+            if ($query->num_rows() > 0) {
+                $results['menu_item'] = $query->result_array();
+            }
+
+        $q_discount = "SELECT sum(CASE WHEN items.discount_scope='order' then items.discount_amount end) "
+                . "as order_discount,sum(CASE WHEN items.discount_scope='item' then items.discount_amount end)"
+                . " as item_discount FROM pos_transaction_items as items "
+                . "where items.date_created BETWEEN '$report_from' AND '$actual_print_date_to' ";
+
+                $query = $this->db->query($q_discount);
+                if ($query->num_rows() > 0) {
+                    $results['discount'] = $query->result_array();
+                }
+                
+
+        $q_discount_cash = "SELECT sum(CASE WHEN discount_scope='cash' then discount end) as cash_discount "
+                . "FROM pos_transaction_info "
+                . "where date_created BETWEEN '$report_from' AND '$actual_print_date_to' ";
+
+                $query = $this->db->query($q_discount_cash);
+
+                if ($query->num_rows() > 0) {
+                    $results['discount_cash'] = $query->result_array();
+                }
+
+        $q_tax = "SELECT sum(tax) as tax FROM pos_transaction_info where date_created "
+                . "BETWEEN '$report_from' AND '$actual_print_date_to'";
+
+                $query = $this->db->query($q_tax);
+
+                if ($query->num_rows() > 0) {
+                    $results['tax'] = $query->result_array();
+                }
+
+                //set other defaults to empty arrays
+                $results['data'] =[];
+                $results['totals'] =[];
+                $results['count'] =[];
+             
+        return $results;
+    }
+
+    public function getFnBSalesByCategoryReportsApi($type,$report_from,$report_to,$locationCode, $resv_id=NULL){
+
+        $results['category'] = array();
+        $results['discount'] = array();
+        $results['discount_cash'] = array();
+        $results['tax'] = array();
+
+        $print_date_from=$report_from;
+        $temp_date=$report_to;
+        $actual_print_date_to = date('Y-m-d', strtotime($temp_date . '+1 day')); //increase date by 1 since date_created is a datetime field
+
+        $q_category = "SELECT sum(items.price) as price, m_cat.title as title,"
+                . "sum(items.price)/p.total_price * 100 as percentage "
+                . "FROM pos_transaction_items as items CROSS JOIN (SELECT sum(price) as total_price FROM pos_transaction_items "
+                . "WHERE date_created BETWEEN '$report_from' AND '$actual_print_date_to') p "
+                . "left join pos_menu_items as m_items on (items.menuid=m_items.ID) "
+                . "left join pos_menu_categories as m_cat on (m_items.category=m_cat.ID) "
+                . "where items.date_created BETWEEN '$report_from' AND '$actual_print_date_to' "
+                . " group by m_cat.title  ";
+                
+// echo $q_category;exit;
+
+            $query = $this->db->query($q_category);
+
+            if ($query->num_rows() > 0) {
+                $results['category'] = $query->result_array();
+            }
+
+            $q_discount = "SELECT sum(CASE WHEN items.discount_scope='order' then items.discount_amount end) "
+                        . "as order_discount,sum(CASE WHEN items.discount_scope='item' then items.discount_amount end)"
+                        . " as item_discount FROM pos_transaction_items as items "
+                        . "where items.date_created BETWEEN '$report_from' AND '$actual_print_date_to' ";
+                        // . "AND STR_TO_DATE('$actual_print_date_to','%d/%m/%Y')";
+
+                $query = $this->db->query($q_discount);
+                if ($query->num_rows() > 0) {
+                    $results['discount'] = $query->result_array();
+                }
+                
+
+        $q_discount_cash = "SELECT sum(CASE WHEN discount_scope='cash' then discount end) as cash_discount "
+                . "FROM pos_transaction_info "
+                . "where date_created BETWEEN '$report_from' AND '$actual_print_date_to' ";
+
+                $query = $this->db->query($q_discount_cash);
+
+                if ($query->num_rows() > 0) {
+                    $results['discount_cash'] = $query->result_array();
+                }
+
+        $q_tax = "SELECT sum(tax) as tax FROM pos_transaction_info where date_created "
+                . "BETWEEN '$report_from' AND '$actual_print_date_to'";
+
+                $query = $this->db->query($q_tax);
+
+                if ($query->num_rows() > 0) {
+                    $results['tax'] = $query->result_array();
+                }
+
+                //set other defaults to empty arrays
+                $results['data'] =[];
+                $results['totals'] =[];
+                $results['count'] =[];
+                $results['menu_item'] =[];
+             
+        return $results;
+    }
+
 
     /*gets reports for api*/
-    public function getReportsApi($type,$report_from,$report_to, $resv_id=NULL){
+    public function getReportsApi($type,$report_from,$report_to,$locationCode, $resv_id=NULL){
 
         $app_date = date('Y-m-d', strtotime($this->getAppInfo()));
         $report_user="all";
-        $and_user="";
-        $fo_and_user="";
+        $location=$fo_location=$fo_and_user=$and_user="";
+
+        if(!empty($locationCode)){
+            $location=" AND ri.location_code='".$locationCode."'";
+            $fo_location=" AND fo.location_code='".$locationCode."'";
+        }
+        
 
         //convert report_from
         $temp_date = str_replace('/', '-', $report_from);
@@ -2537,17 +2673,17 @@ class Resv_model extends App_model {
         switch ($type) {
             /*get only guests arriving in this duration:confirmed*/
             case "arrivals":
-                $where = "and cast(ri.arrival as date) between '$from' AND '$to' $and_user "
+                $where = "and cast(ri.arrival as date) between '$from' AND '$to'  $location $and_user "
                         . "and ri.status='confirmed' ORDER BY ri.arrival ASC";
                 break;
             case "departures":
-                $where = "and cast(ri.departure as date) between '$from' AND '$to' $and_user "
+                $where = "and cast(ri.departure as date) between '$from' AND '$to'  $location $and_user "
                         . " ORDER BY ri.departure ASC";
                 break;
             case "staying guests":
                 $where = " and ri.account_type ='ROOM' and DATE(ri.actual_arrival) <= '$from' "
                         . "AND (DATE(ri.actual_departure) >='$to' or ri.actual_departure='0000-00-00 00:00:00') "
-                        . "$and_user ORDER BY ri.actual_arrival ASC";
+                        . " $location $and_user ORDER BY ri.actual_arrival ASC";
                 break;
             case "reservation":
             case "resev_payments":
@@ -2564,12 +2700,12 @@ class Resv_model extends App_model {
                     . "reservationfolioitems as fo left join "
                     . "reservationitems as ri on(fo.reservation_id =ri.reservation_id) "
                     . "left join roomitems as ro on(ri.room_number=ro.ID)"
-                    . "where fo.date_created between '$from' and '$to' "
+                    . "where fo.date_created between '$from' and '$to' $fo_location "
                     . "and fo.action='sale' $fo_and_user order by fo.date_created,fo.signature_created";
 
             $q_totals = "SELECT *,SUM(credit) as folio_credit,sum(debit) as folio_debit,"
                     . "count(description) as transactions from reservationfolioitems as fo "
-                    . "where date_created between '$from' and '$to' "
+                    . "where date_created between '$from' and '$to' $fo_location "
                     . "and action='sale' $fo_and_user group by account_number";
             
         }else if ($type == "sales_fnb_summary") {
@@ -2577,13 +2713,13 @@ class Resv_model extends App_model {
                     . "reservationfolioitems as fo left join "
                     . "reservationitems as ri on(fo.reservation_id =ri.reservation_id) "
                     . "left join roomitems as ro on(ri.room_number=ro.ID)"
-                    . "where fo.date_created between '$from' and '$to' "
+                    . "where fo.date_created between '$from' and '$to' $fo_location "
                     . "and fo.source_app = 'fnb'"
                     . "and fo.action='sale' $fo_and_user order by fo.date_created,fo.signature_created";
 
             $q_totals = "SELECT *,SUM(credit) as folio_credit,sum(debit) as folio_debit,"
                     . "count(description) as transactions from reservationfolioitems as fo "
-                    . "where date_created between '$from' and '$to' "
+                    . "where date_created between '$from' and '$to' $fo_location "
                     . "and fo.source_app = 'fnb'"
                     . "and action='sale' $fo_and_user group by account_number";
             
@@ -2592,12 +2728,12 @@ class Resv_model extends App_model {
                     . "reservationfolioitems as fo left join "
                     . "reservationitems as ri on(fo.reservation_id =ri.reservation_id) "
                     . "left join roomitems as ro on(ri.room_number=ro.ID) "
-                    . "where fo.date_created between '$from' and '$to' "
+                    . "where fo.date_created between '$from' and '$to' $fo_location "
                     . "and fo.action='payment' $fo_and_user order by fo.date_created,fo.signature_created";
 
             $q_totals = "SELECT *,SUM(credit) as folio_credit,sum(debit) as folio_debit,"
-                    . "count(description) as transactions from reservationfolioitems "
-                    . "where date_created between '$from' and '$to' "
+                    . "count(description) as transactions from reservationfolioitems as fo "
+                    . "where date_created between '$from' and '$to' $fo_location "
                     . "and action='payment' $fo_and_user group by account_number";					
 					 
         } else if ($type == "audit trail") {
@@ -2654,6 +2790,13 @@ class Resv_model extends App_model {
                 $results['totals'] = $query->result_array();
             }
         }
+
+        //set other defaults to empty arrays
+        $results['menu_item'] =[];
+        $results['discount'] =[];
+        $results['discount_cash'] =[];
+        $results['tax'] =[];
+        $results['category'] =[];
 
         return $results;
     }
